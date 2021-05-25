@@ -9,46 +9,56 @@ import {
 } from "@chakra-ui/react"
 import Link from 'next/link';
 import { useRouter } from 'next/router'
-import React, {useEffect, useState} from 'react'
-import MContext from '../Providers/Provider'
+import React, {useEffect, useState, useReducer, useContext} from 'react'
 
-const hmm = " grr"
+
+const ACTIONS = {
+  APARECER: "aparecer",
+  BORRAR:"borrar"
+}
+
+const reducer = (state,action) => {
+  switch(action.type){
+    case ACTIONS.APARECER:
+      return {val: "Tile Change 2"}
+    case ACTIONS.BORRAR:
+      return {val: ""}
+    default:
+      return state
+  }
+
+}
 
 const Navbar = () => {
   const { colorMode, toggleColorMode } = useColorMode();
   const bgColor = { light: 'gray.300', dark: 'gray.600' };
 	const textColor = { light: 'black', dark: 'gray.100' };
 
-
-  // const [texty, setTexty ]= useState()
-  const [currentState, setCurrentState] = useState({
-    link1State: "state 1",
-    link2State: "",
-    link3State: "state 3"
+  // const ctx = useContext(testContext)
+  const [mainState, dispatch] = useReducer(reducer, {
+    val:"default value"
   })
 
   const router = useRouter()
-  useEffect(()=>{
-    // console.log(texty)
+  
 
-    // console.log(router)
-    // setTexty("OK")
-  },[])
+  useEffect(()=>{
+    const timerID = setTimeout(()=>{
+      console.log("small wait")
+    },500)
+    return ()=>{
+      console.log("CLEANUP")
+      clearTimeout(timerID)
+    }
+
+  },[mainState])
 
   const clicky=()=>{
-    setCurrentState((prevState)=>{
-      return {...prevState,link2State:"Link2"}
-    })
-    
-    // setTexty("Link2");
-
-    // console.log()
+    dispatch({type:ACTIONS.APARECER})
   }
 
   const secondClick =()=>{
-    setCurrentState((prevState)=>{
-      return {...prevState,link2State:""}
-    })
+    dispatch({type:ACTIONS.BORRAR})
     
   }
   return(
@@ -74,14 +84,14 @@ const Navbar = () => {
 					align='center'
 					isInline>
             <Box>
-              <a onClick={clicky}>Link1</a>
+              <a onClick={clicky}>Tile Change 1</a>
             </Box>
 
           <Box position='relative'>
-            <a onClick={secondClick}>{currentState.link2State}</a>
+            <a onClick={secondClick}>{mainState.val}</a>
           </Box>
           <Box position='relative'>
-            <a>Link3</a>
+            <a>Tile Change 3</a>
           </Box>
 
         </Stack>
